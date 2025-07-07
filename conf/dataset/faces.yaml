@@ -1,0 +1,18 @@
+dataset_name: faces-demo
+full_image_size: 250
+final_image_size: 110
+seed: 42
+train_fraction: 0.8
+fit_augmentations:
+  - name: Transpose
+    params:
+        p: 0.5
+  - name: HorizontalFlip
+    params:
+        p: 0.5
+  - name: VerticalFlip
+    params:
+        p: 0.5
+  - name: RandomRotate90
+    params:
+        p: 0.8

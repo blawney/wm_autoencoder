@@ -1,0 +1,2 @@
+name: resnet50_autoencoder
+latent_dim: 128

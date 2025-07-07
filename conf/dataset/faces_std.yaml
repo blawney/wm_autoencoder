@@ -1,0 +1,29 @@
+dataset_name: faces-demo
+full_image_size: 250
+final_image_size: 112
+seed: 42
+train_fraction: 0.8
+fit_augmentations:
+  - name: Transpose
+    params:
+        p: 0.5
+  - name: HorizontalFlip
+    params:
+        p: 0.5
+  - name: VerticalFlip
+    params:
+        p: 0.5
+  - name: RandomRotate90
+    params:
+        p: 0.8
+  - name: Normalize
+    params:
+        p: 1.0
+        mean: [0.58602988, 0.44877772, 0.36733353]
+        std: [0.23351194, 0.20134174, 0.19416176]
+validate_augmentations:
+  - name: Normalize
+    params:
+        p: 1.0
+        mean: [0.58602988, 0.44877772, 0.36733353]
+        std: [0.23351194, 0.20134174, 0.19416176]
