@@ -1,6 +1,8 @@
 # wm_autoencoder
 PyTorch based autoencoder for learning latent representations of histopathology images for Waldenstrom's Macroglobulinemia. 
 
+We make use of the Lightning project (https://lightning.ai/docs/pytorch/stable/) to wrap PyTorch and reduce some of the boilerplate.
+
 For configuration, we use the Hydra project (https://hydra.cc/)
 
 ## Setup your environment
@@ -61,4 +63,25 @@ outputs/YYYY-MM-DD/HH-MM-SS/
 ```
 Some highlights:
 - `.hydra/config.yaml` has the final configuration based on your command line options once composed with the default options. This serves as the ground-truth for your configuration options when attempting to recreate results at a later date.
-- `
+- The `metrics.csv` file has training metrics such as train and validation loss.
+- The `checkpoints/` folder has lightning-compatible model checkpoints, which are fully compatible with pytorch.
+
+## Using the models
+
+To use the models for projecting or viewing results, you can do the following (from the `src/` directory) to view the result of passing an image through the autoencoder:
+
+```
+>>> import torch
+>>> from lightning_modules.autoencoder import AutoEncoderModuleV2
+>>> from omegaconf import OmegaConf
+>>> cfg = OmegaConf.create(open('<PATH TO FINAL CONFIG>').read())
+>>> model = AutoEncoderModuleV2.load_from_checkpoint('<PATH TO CHECKPOINT FILE>', cfg=cfg)
+>>> with torch.no_grad():
+...     # a random image with batch size = 1
+...     img = torch.rand(1,3,112,112)
+...     out = model(img)
+```
+
+(Obviously, you would need to size your image to match the model and perform any image preparation instead of using a random tensor).
+
+To extract the latent representation, you can use `model.encoder(img)`. The result will be the encoded representation (e.g. an array of size equal to your latent dimension size).
