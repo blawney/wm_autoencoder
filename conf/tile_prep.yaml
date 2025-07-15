@@ -1,0 +1,42 @@
+hydra:
+  job:
+    chdir: true
+  run:
+    dir: ../extracted_tiles/${now:%Y-%m-%d_%H-%M-%S}
+
+# path to the metadata file telling us which slides to process
+image_metadata:
+
+# the directory where the input slide images are located. Absolute path!
+input_dir:
+
+# an integer describing which tile extractor should be used. See the 
+# src/utils/image_utils.py file to select
+tile_extraction_style:
+
+# which shard is being processed, if shards are being used to parallelize
+# jobs over multiple worker nodes. Optional!
+shard:
+
+# how many tiles should we extract from the slide image
+num_tiles: 512
+
+# tiles are assumed square- this is the pixel dimension
+tile_size: 192
+
+# the zoom level for the slide images. Lower numbers are more zoomed-in
+# but naturally might have less larger-scale structural context
+level: 1
+
+# During tile extraction, we essentially place a grid over the slide 
+# image and grab tiles from there. The offset mode dictates where this grid's
+# origin is located. 0 means the top left of the tile grid is aligned 
+# with the top left of the image. Mode 2 means the starting position is offset
+# by half of the tile size in both directions, so we pick up a translated
+# grid instead
+offset_mode: 0 
+
+# some tiles can appear blurry and we use a threshold on the variance
+# of the discrete laplacian to remove those. Only used by specific
+# tile extraction classes
+blur_threshold: 700

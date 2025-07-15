@@ -15,6 +15,25 @@ mamba env create -f conda/env.gpu.yaml
 
 ## To run
 
+#### Preliminaries
+
+We expect that relatively small images (e.g. 192x192 pixels) will be fed to the autoencoder model. The input SVS or layered TIFF images are significantly larger and cannot be used directly. Thus, we need to preprocess and extract regions of interest. To that end, we have a tile-extraction script which defines some routines for preprocessing and saving PNG images, which we will call tiles. 
+
+First, we need an input metadata file which will define which images we want to process and potentially some other metadata about the slides. For the tile extraction script, we make use of the following columns:
+- `image_id`: This contains a unique image ID which will be used to locate the SVS or TIFF file through a wildcard pattern. For example, if the column contains "ABC", we will search for "ABC.*" in the directory of slide images.
+- (optional) `image_subdir`: In case we have many images and wish to extract many tiles from each, it can be helpful to store the images in subdirectories to avoid directories with an excessive number of PNG files. If this field is provided, it's expected that the slide image will be located in `<input dir>/<image_subdir>/` so the wildcard search for `image_id` will be executed in this directory.
+- (optional) `shard`: Used for simple parallelization (e.g. on an HPC cluster), if `shard` is specified, then one or more slides can be associated with a shard. Then, when starting jobs for tile extraction, the shard number is specified and only images corresponding to the matching shard will be processed. 
+
+By default, the `conf/tile_prep.yaml` defines parameters for the tile extraction process. This includes things like tile size, the number of tiles to extract, the resolution level in the SVS/TIFF image, and other constants. See that file for detailed descriptions of the parameters. As usual, we employ Hydra, so we can set or override parameters at the command line. For example: 
+```
+python -m data_preparation.create_tiling_sharded \
+    ++image_metadata=<PATH TO CSV METADATA FILE> \
+    ++input_dir=<PATH TO SLIDE DIRECTORY> \
+    ++tile_extraction_style=1 \
+    ++blur_threshold=700
+```
+By default, this will create a directory at the root of the project and place the extracted tiles under that. That can be adjusted by editing `conf/tile_prep.yaml` 
+
 #### A small demo dataset- faces in the wild
 While the primary objective is to model the latent space of the histopathology images, a simple example can be constructed using the "labeled faces in the wild" dataset available here: https://www.kaggle.com/datasets/jessicali9530/lfw-dataset
 
